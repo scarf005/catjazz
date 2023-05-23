@@ -1,0 +1,16 @@
+{
+  "editor.rulers": [100],
+  "deno.enable": true,
+  "deno.disablePaths": ["types"],
+  "deno.lint": true,
+  "deno.unstable": true,
+  "deno.config": "./deno.jsonc",
+  "[json]": {
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 100
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "ctags-companion.documentSelector": { "scheme": "file", "language": "json" }
+}

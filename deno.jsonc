@@ -1,0 +1,16 @@
+{
+  "exclude": ["types"],
+  "tasks": {
+    "tools": "deno run --watch -A"
+  },
+  "fmt": {
+    "exclude": ["dump.json"],
+    "semiColons": false,
+    "lineWidth": 100,
+    "proseWrap": "never"
+  },
+  "test": {
+    "exclude": ["tools/replace_with.ts", "tools/replace_with_test.ts"]
+  },
+  "compilerOptions": { "exactOptionalPropertyTypes": true }
+}
