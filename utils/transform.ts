@@ -4,7 +4,7 @@ import { z } from "../deps/zod.ts"
 import { bgRed } from "../deps/std/fmt.ts"
 
 import { Entry, parseCataJson } from "./parse.ts"
-import { id } from "./id.ts"
+import { deepMerge } from "../deps/std/collection.ts"
 
 export type Transformer<T = unknown> = (text: string) => T[]
 
@@ -32,8 +32,11 @@ export const schemaTransformer = (schema: z.ZodTypeAny): Transformer => (text) =
   parseCataJson(text)
     .map((x) =>
       match(schema.safeParse(x))
-        .with({ success: true, data: P.select() }, id)
-        .otherwise(() => x)
+        .with({ success: true, data: P.select() }, (parsed) =>
+          deepMerge(x, parsed, { arrays: "replace" }))
+        .otherwise(() =>
+          x
+        )
     )
 
 /**
