@@ -30,7 +30,9 @@ type OptionParams = Parameters<OptionMethod>
 export const cliOptions = {
   path: ["-p, --path <string>", "path to recursively find jsons.", { required: true }],
   quiet: ["-q, --quiet", "silence all output.", { required: false }],
-  output: ["-o, --output <type:string>", "output file path. outputs to stdout if omitted.", { required: false }],
+  output: ["-o, --output <type:string>", "output file path. outputs to stdout if omitted.", {
+    required: false,
+  }],
   format: ["--format <path:string>", "format json files using formatter at given path.", {
     required: false,
   }],

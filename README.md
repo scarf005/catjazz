@@ -4,7 +4,7 @@
   <img src="./catjazz.svg" width="50%">
 </header>
 
-CATJAZZ is a collection of API for manipulating JSON data in [Cataclysm: Bright Nights][CBN]. They are powered by the [deno typescript runtime][deno] to ensure they're easy to use, portable, and fully typesafe. 
+CATJAZZ is a collection of API for manipulating JSON data in [Cataclysm: Bright Nights][CBN]. They are powered by the [deno typescript runtime][deno] to ensure they're easy to use, portable, and fully typesafe.
 
 ## Example
 
