@@ -1,6 +1,6 @@
 import { match, P } from "../deps/ts_pattern.ts"
 import { z } from "../deps/zod.ts"
-import { fromLegacyVolume, fromLegacyWeight } from "../utils/units.ts"
+import { fromLegacyVolume, fromLegacyWeight } from "../units/mod.ts"
 import { id } from "../utils/id.ts"
 
 /** converts 123 -> "123 g"  */
