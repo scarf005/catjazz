@@ -3,17 +3,17 @@ import { match, P } from "../deps/ts_pattern.ts"
 import { z } from "../deps/zod.ts"
 import { bgRed } from "../deps/std/fmt.ts"
 
-import { Entry, parseCataJson } from "./parse.ts"
-import { id } from "./id.ts"
+import { CataEntry, Entry, parseCataJson } from "./parse.ts"
+import { deepMerge } from "../deps/std/collection.ts"
 
 export type Transformer<T = unknown> = (text: string) => T[]
 
 /** Apply same transformation to all JSON files recursively in given directory. */
-export const applyRecursively = (transformer: Transformer) => async (entries: Entry[]) => {
+export const applyRecursively = (fn: (text: string) => string) => async (entries: Entry[]) => {
   await asynciter(entries)
     .concurrentUnorderedMap(async ({ path, text }) => {
       try {
-        await Deno.writeTextFile(path, JSON.stringify(transformer(text), null, 2))
+        await Deno.writeTextFile(path, fn(text))
       } catch (e) {
         console.log(`${bgRed("ERROR")} @ ${path}: ${e}`)
       }
@@ -28,11 +28,14 @@ export const applyRecursively = (transformer: Transformer) => async (entries: En
  *
  * entries that do not satisfy schema are left unchanged.
  */
-export const schemaTransformer = (schema: z.ZodTypeAny): Transformer => (text) =>
-  parseCataJson(text)
+export const schemaTransformer = (schema: z.ZodTypeAny) => (entries: CataEntry[]) =>
+  entries
     .map((x) =>
       match(schema.safeParse(x))
-        .with({ success: true, data: P.select() }, id)
+        .with(
+          { success: true, data: P.select() },
+          (parsed) => deepMerge(x, parsed, { arrays: "replace" }),
+        )
         .otherwise(() => x)
     )
 
