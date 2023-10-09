@@ -1,12 +1,34 @@
 # CATJAZZ: Bright Nights JSON tools collection
 
 <header align="center">
-  <img src="./catjazz.svg" width="50%">
+  <figure>
+    <img src="./catjazz.svg" width="50%">
+    <figcaption>
+      <small><a rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a></small>
+    </figcaption>
+  </figure>
 </header>
 
 CATJAZZ is a collection of API for manipulating JSON data in [Cataclysm: Bright Nights][CBN]. They are powered by the [deno typescript runtime][deno] to ensure they're easy to use, portable, and fully typesafe.
 
-## Example
+## User usage example
+
+![image](https://github.com/scarf005/catjazz/assets/54838975/ff3f1082-f0ca-4c09-a75c-0053a3776d06)
+
+```sh
+# run from deno.land
+deno run --allow-read https://deno.land/x/catjazz@v0.0.2/examples/calories.ts
+
+# or run directly from github
+deno run --allow-read https://raw.githubusercontent.com/scarf005/catjazz/af3707339a21c55b6f52ab758508588d45c6a756/examples/calories.ts
+
+# or clone the repo and run from relative path
+deno run --allow-read examples/calories.ts
+```
+
+## API usage Example
+
+API docs are WIP. For now, check out the [example](./examples) directory for some example usage.
 
 ```ts
 import { baseCli } from "./main.ts"
