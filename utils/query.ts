@@ -70,7 +70,7 @@ export const queryCli = <const Schema extends z.ZodTypeAny>(
       return outputTo(timeit)(mapped, output)
     })
 
-const outputTo = (timeit: Timeit) => async (data: unknown, path?: string) => {
+export const outputTo = (timeit: Timeit) => async (data: unknown, path?: string) => {
   const output = JSON.stringify(data, null, 2)
   if (!path) {
     return console.log(output)
@@ -98,8 +98,6 @@ if (import.meta.main) {
     desc: "Find all query mutation flags",
     schema: flags,
     map: (xss) => {
-      const allFlags = new Set(xss.flat())
-
       const result = [...new Set(xss.flat())]
         .map((x) => ({ id: x, ...mutationFlag }))
 
