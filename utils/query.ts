@@ -43,14 +43,21 @@ export const queryCli = <const Schema extends z.ZodTypeAny>(
     .option(...cliOptions.quiet)
     .option(...cliOptions.path)
     .option(...cliOptions.output)
-    .option("--flatten", "silence all output.", { required: false })
     .description(desc)
     .action(async ({ path, output, quiet = false }) => {
       const { timeit, timeitSync } = makeTimeits(quiet)
 
-      const transformer = schemaFilter(schema)
+      const filter = schemaFilter(schema)
       const entries = await readRecursively(path)
-      const query = () => entries.flatMap(({ text }) => transformer(text))
+      const query = () =>
+        entries.flatMap(({ text, path }) => {
+          try {
+            return filter(text)
+          } catch (e) {
+            console.log(path, e)
+            return []
+          }
+        })
 
       const queried = timeitSync({ name: task, fn: query })
       if (queried.length === 0) {
@@ -64,20 +71,40 @@ export const queryCli = <const Schema extends z.ZodTypeAny>(
     })
 
 const outputTo = (timeit: Timeit) => async (data: unknown, path?: string) => {
+  const output = JSON.stringify(data, null, 2)
   if (!path) {
-    return console.log(data)
+    return console.log(output)
   }
   await timeit({
     name: `wrote ${Array.isArray(data) ? data.length : 1} entries`,
-    val: Deno.writeTextFile(path, JSON.stringify(data, null, 2)),
+    val: Deno.writeTextFile(path, output),
   })
 }
 
 if (import.meta.main) {
   const flags = z
-    .object({ type: z.literal("mutation"), flags: z.array(z.string()) })
+    .object({
+      type: z.literal("mutation"),
+      flags: z.array(z.string()),
+    })
     .transform((x) => x.flags)
 
-  const main = queryCli({ desc: "Query mutation flags", schema: flags })
+  const mutationFlag = {
+    "//": "This trait flag is used by cosmetic trait JSON, with no hardcode usage at present.",
+    "type": "mutation_flag",
+  }
+
+  const main = queryCli({
+    desc: "Find all query mutation flags",
+    schema: flags,
+    map: (xss) => {
+      const allFlags = new Set(xss.flat())
+
+      const result = [...new Set(xss.flat())]
+        .map((x) => ({ id: x, ...mutationFlag }))
+
+      return result
+    },
+  })
   await main().parse(Deno.args)
 }

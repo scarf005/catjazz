@@ -3,7 +3,7 @@ import { z, type ZodType as _ZodType } from "../deps/zod.ts"
 import { match, P } from "../deps/ts_pattern.ts"
 import { id } from "./id.ts"
 
-import { Entry, readRecursively } from "./parse.ts"
+import { CataEntry, Entry, parseCataJson, readRecursively } from "./parse.ts"
 import { applyRecursively, schemaTransformer } from "./transform.ts"
 import { timeit } from "./timeit.ts"
 import { fmtJsonRecursively } from "./json_fmt.ts"
@@ -71,9 +71,17 @@ export const baseCli = ({ desc, task = "migration", schema }: BaseCliOption) => 
       const timeIt = timeit(quiet)
 
       const transformer = schemaTransformer(schema)
-      const recursiveTransformer = applyRecursively(transformer)
+      const ignore = (entries: CataEntry[]) =>
+        entries.find(({ type }) => ["mapgen", "palette", "mod_tileset"].includes(type))
 
-      const entries = await readRecursively(path)
+      const mapgenIgnoringTransformer = (text: string) => {
+        const entries = parseCataJson(text)
+        return ignore(entries) ? text : JSON.stringify(transformer(entries), null, 2)
+      }
+
+      const recursiveTransformer = applyRecursively(mapgenIgnoringTransformer)
+
+      const entries = await timeIt({ name: "reading JSON", val: readRecursively(path) })
 
       await timeIt({ name: task, val: recursiveTransformer(entries) })
 
