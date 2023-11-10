@@ -42,7 +42,7 @@ const main = () =>
       default: "portion" as const,
     })
     .description("Query food calories.")
-    .action(async ({ path, output, sortBy, limit, quiet = false }) => {
+    .action(async ({ path, output, sortBy, limit, quiet }) => {
       const { timeit, timeitSync } = makeTimeits(quiet)
 
       const filter = schemaFilter(food)
