@@ -29,5 +29,13 @@ jobs:
       - name: Run linter
         run: deno lint
 
+      - uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-deno-cache-${{ hashFiles('deno.lock') }}
+          restore-keys: ${{ runner.os }}-deno-cache-
+          path: |
+            /home/runner/.cache/deno/deps
+            /home/runner/.cache/deno/npm
+
       - name: Run tests
         run: deno test -A
