@@ -31,9 +31,9 @@ deno run --allow-read examples/calories.ts
 API docs are WIP. For now, check out the [example](./examples) directory for some example usage.
 
 ```ts
-import { baseCli } from "./main.ts"
-import { z } from "./deps/zod.ts"
-import { id } from "./utils/id.ts"
+import { baseCli } from "https://deno.land/x/catjazz@$MODULE_VERSION/mod.ts"
+import { z } from "https://deno.land/x/catjazz@$MODULE_VERSION/deps/zod.ts"
+import { id } from "https://deno.land/x/catjazz@$MODULE_VERSION/utils/id.ts"
 
 const noop = z.object({}).passthrough().transform(id)
 const main = baseCli({ desc: "Do nothing", schema: noop })

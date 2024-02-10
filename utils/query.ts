@@ -1,7 +1,7 @@
 import { Command } from "../deps/cliffy.ts"
 import { z, type ZodType as _ZodType } from "../deps/zod.ts"
 
-import { readRecursively } from "./parse.ts"
+import { readJSONsRec } from "./parse.ts"
 import { schemaFilter } from "./transform.ts"
 import { makeTimeits, Timeit } from "./timeit.ts"
 import { BaseCliOption, cliOptions } from "./cli.ts"
@@ -41,14 +41,14 @@ export const queryCli = <const Schema extends z.ZodTypeAny>(
 () =>
   new Command()
     .option(...cliOptions.quiet)
-    .option(...cliOptions.path)
+    .option(...cliOptions.paths)
     .option(...cliOptions.output)
     .description(desc)
-    .action(async ({ path, output, quiet = false }) => {
+    .action(async ({ paths, output, quiet = false }) => {
       const { timeit, timeitSync } = makeTimeits(quiet)
 
       const filter = schemaFilter(schema)
-      const entries = await readRecursively(path)
+      const entries = await readJSONsRec(paths)
       const query = () =>
         entries.flatMap(({ text, path }) => {
           try {

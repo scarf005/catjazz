@@ -3,7 +3,7 @@ import { z, type ZodType as _ZodType } from "../deps/zod.ts"
 import { match, P } from "../deps/ts_pattern.ts"
 import { id } from "./id.ts"
 
-import { CataEntry, Entry, parseCataJson, readRecursively } from "./parse.ts"
+import { CataEntry, Entry, parseCataJson, readJSONsRec } from "./parse.ts"
 import { applyRecursively, schemaTransformer } from "./transform.ts"
 import { timeit } from "./timeit.ts"
 import { fmtJsonRecursively } from "./json_fmt.ts"
@@ -28,7 +28,7 @@ type OptionMethod = Command["option"]
 type OptionParams = Parameters<OptionMethod>
 
 export const cliOptions = {
-  path: ["-p, --path <path:string>", "path to recursively find jsons.", { required: true }],
+  paths: ["-p, --paths <paths...:string>", "paths to recursively find jsons.", { required: true }],
   quiet: ["-q, --quiet <quiet:boolean>", "silence all output.", { default: false as const }],
   output: ["-o, --output <path:string>", "output file path. outputs to stdout if omitted.", {
     required: false,
@@ -63,11 +63,11 @@ export const cliOptions = {
  */
 export const baseCli = ({ desc, task = "migration", schema }: BaseCliOption) => () =>
   new Command()
-    .option(...cliOptions.path)
+    .option(...cliOptions.paths)
     .option(...cliOptions.quiet)
     .option(...cliOptions.format)
     .description(desc)
-    .action(async ({ path, format, quiet = false }) => {
+    .action(async ({ paths, format, quiet = false }) => {
       const timeIt = timeit(quiet)
 
       const transformer = schemaTransformer(schema)
@@ -80,8 +80,7 @@ export const baseCli = ({ desc, task = "migration", schema }: BaseCliOption) => 
       }
 
       const recursiveTransformer = applyRecursively(mapgenIgnoringTransformer)
-
-      const entries = await timeIt({ name: "reading JSON", val: readRecursively(path) })
+      const entries = await timeIt({ name: "reading JSON", val: readJSONsRec(paths) })
 
       await timeIt({ name: task, val: recursiveTransformer(entries) })
 

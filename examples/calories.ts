@@ -1,7 +1,7 @@
 import { Command, EnumType } from "../deps/cliffy.ts"
-import { z } from "../mod.ts"
+import { z } from "../deps/zod.ts"
 import { cliOptions } from "../utils/cli.ts"
-import { readRecursively } from "../utils/parse.ts"
+import { readJSONsRec } from "../utils/parse.ts"
 import { outputTo } from "../utils/query.ts"
 import { makeTimeits } from "../utils/timeit.ts"
 import { schemaFilter } from "../utils/transform.ts"
@@ -34,7 +34,7 @@ const main = () =>
     .name("calories")
     .type("query", queryType)
     .option(...cliOptions.quiet)
-    .option(...cliOptions.path)
+    .option(...cliOptions.paths)
     .option(...cliOptions.output)
     .option("--limit <amount:integer>", "Limit number of entries to display.", { default: 30 })
     .option("--no-limit", "Display all entries.")
@@ -42,11 +42,11 @@ const main = () =>
       default: "portion" as const,
     })
     .description("Query food calories.")
-    .action(async ({ path, output, sortBy, limit, quiet }) => {
+    .action(async ({ paths, output, sortBy, limit, quiet }) => {
       const { timeit, timeitSync } = makeTimeits(quiet)
 
       const filter = schemaFilter(food)
-      const entries = await readRecursively(path)
+      const entries = await readJSONsRec(paths)
       const query = () =>
         entries.flatMap(({ text, path }) => {
           try {

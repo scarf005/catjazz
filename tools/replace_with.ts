@@ -2,15 +2,14 @@
 
 import { brightGreen as g, brightRed as r, brightYellow as y } from "../deps/std/fmt.ts"
 
-import { Entry, readRecursively } from "../utils/parse.ts"
+import { Entry, readJSONsRec } from "../utils/parse.ts"
 import { timeit } from "../utils/timeit.ts"
 import { fmtJsonRecursively } from "../utils/json_fmt.ts"
 import { schemaTransformer } from "../utils/transform.ts"
 import { Command } from "../deps/cliffy.ts"
 import { z } from "../deps/zod.ts"
-import { promiseAllProperties } from "../deps/promise_all_properties.ts"
 import { match, P } from "../deps/ts_pattern.ts"
-import { cliOptions } from "../mod.ts"
+import { cliOptions } from "../utils/cli.ts"
 
 type CataWithId = z.infer<typeof cataWithId>
 const cataWithId = z.object({ id: z.string() }).passthrough()
@@ -101,15 +100,14 @@ const main = () =>
     .option("-u, --using <type:string>", "path to recursively search jsons.", { required: true })
     .arguments("<id...>")
     .action(async ({ replace, using, format, quiet = false }, ...idsToReplace) => {
-      const readResult = promiseAllProperties({
-        replaceEntries: readRecursively(replace).then(parseIds),
-        usingEntries: readRecursively(using).then(parseIds),
+      const [replaceEntries, usingEntries] = await timeit(quiet)({
+        name: "reading entries",
+        val: Promise.all([
+          readJSONsRec([replace]).then(parseIds),
+          readJSONsRec([using]).then(parseIds),
+        ]),
       })
 
-      const { replaceEntries, usingEntries } = await timeit(quiet)({
-        name: "reading entries",
-        val: readResult,
-      })
       const replaceFn = writeReplaceWith(replaceEntries)(usingEntries)
 
       const result = await Promise.all(idsToReplace.map(replaceFn))
