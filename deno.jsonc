@@ -4,13 +4,16 @@
     "tools": "deno run --watch -A"
   },
   "fmt": {
-    "exclude": ["dump.json"],
+    "exclude": ["dumped"],
     "semiColons": false,
     "lineWidth": 100,
     "proseWrap": "never"
   },
   "test": {
     "exclude": ["tools/replace_with.ts", "tools/replace_with_test.ts"]
+  },
+  "imports": {
+    "https://deno.land/x/catjazz@$MODULE_VERSION/": "./"
   },
   "compilerOptions": { "exactOptionalPropertyTypes": true }
 }

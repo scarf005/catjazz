@@ -38,7 +38,7 @@ const genTypes = async ([name, rawJson]: [name: string, rawJson: string]) => {
 
 const schemaCli = () =>
   new Command()
-    .option(...cliOptions.path)
+    .option(...cliOptions.paths)
     .option(...cliOptions.output)
     .description(desc)
     .action(async ({ path, output }) => {
