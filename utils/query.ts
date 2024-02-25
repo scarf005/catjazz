@@ -71,12 +71,12 @@ export const queryCli = <const Schema extends z.ZodTypeAny>(
     })
 
 export const outputTo = (timeit: Timeit) => async (data: unknown, path?: string) => {
-  const output = JSON.stringify(data, null, 2)
+  const output = typeof data === "string" ? data : JSON.stringify(data, null, 2)
   if (!path) {
     return console.log(output)
   }
   await timeit({
-    name: `wrote ${Array.isArray(data) ? data.length : 1} entries`,
+    name: `wrote ${Array.isArray(data) ? data.length : 1} entries to ${path}`,
     val: Deno.writeTextFile(path, output),
   })
 }
