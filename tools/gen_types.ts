@@ -1,5 +1,3 @@
-import { Command } from "https://deno.land/x/cliffy@v0.25.7/command/mod.ts"
-
 import {
   InputData,
   jsonInputForTargetLanguage,
@@ -10,6 +8,7 @@ import {
 import { cliOptions } from "../utils/cli.ts"
 import { dump, dumpGrouped, writeGrouped } from "./dump.ts"
 import { makeTimeits } from "../utils/timeit.ts"
+import { Command } from "../deps/cliffy.ts"
 
 // TODO: move to scarf005/schemas
 
